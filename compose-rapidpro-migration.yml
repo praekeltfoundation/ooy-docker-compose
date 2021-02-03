@@ -15,8 +15,8 @@ services:
     depends_on:
       - redis
       - postgresql
-    expose:
-      - '8000'
+    ports:
+      - 8000:8000
     environment:
       - DOMAIN_NAME=rapidpro_domain_placeholder
       - ALLOWED_HOSTS=rapidpro_domain_placeholder

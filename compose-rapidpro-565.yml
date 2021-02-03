@@ -1,0 +1,181 @@
+version: '2'
+services:
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - rapidpro
+      - courier
+    links:
+      - rapidpro
+      - courier
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+  rapidpro:
+    image: praekeltfoundation/rapidpro:v5.6.5
+    depends_on:
+      - courier
+      - mailroom
+    expose:
+      - '8000'
+    environment:
+      - DOMAIN_NAME=rapidpro_domain_placeholder
+      - ALLOWED_HOSTS=rapidpro_domain_placeholder
+      - TEMBA_HOST=rapidpro_domain_placeholder
+      - DJANGO_DEBUG=off
+      - DATABASE_URL=database_url_placeholder
+      - REDIS_URL=redis_url_placeholder
+      - SECRET_KEY=secret_key_placeholder
+      - MANAGEPY_COLLECTSTATIC=on
+      - MANAGEPY_COMPRESS=on
+      - MANAGEPY_INIT_DB=on
+      - MANAGEPY_MIGRATE=on
+      - MAILROOM_URL=mailroom_url_placeholder
+      - MAILROOM_AUTH_TOKEN=mailroom_token_placeholder
+      - ELASTICSEARCH_URL=elasitcsearch_url_placeholder
+      - SEND_AIRTIME=on
+      - SEND_EMAILS=on
+      - SEND_WEBHOOKS=on
+      - DJANGO_COMPRESSOR=on
+      - SEND_MESSAGES=on
+      - SEND_CALLS=on
+      - IP_ADDRESSES=rapidpro_ip_addresses_placeholder
+      - EMAIL_HOST=email_host_placeholder
+      - EMAIL_HOST_USER=email_username_placeholder
+      - EMAIL_HOST_PASSWORD=email_password_placeholder
+      - EMAIL_PORT=email_port_placeholder
+      - BRANDING_LINK=rapidpro_url_placeholder
+      - AWS_STORAGE_BUCKET_NAME=s3_bucket_placeholder
+      - AWS_ACCESS_KEY_ID=aws_access_key_id_placeholder
+      - AWS_SECRET_ACCESS_KEY=aws_secret_access_key_placeholder
+      - AWS_S3_REGION_NAME=s3_region_placeholder
+      - AWS_MEDIA=True
+      - IS_PROD=on
+      - CLEAR_COMPRESSOR_CACHE=on
+      - DEFAULT_FROM_EMAIL=from_email_placeholder
+      - STORAGE_URL=s3_bucket_url_placeholder
+      - UWSGI_HARAKIRI=120
+  celery:
+    image: praekeltfoundation/rapidpro:v5.6.5
+    depends_on:
+      - rapidpro
+      - mailroom
+    links:
+      - mailroom
+    environment:
+      - DOMAIN_NAME=rapidpro_domain_placeholder
+      - ALLOWED_HOSTS=rapidpro_domain_placeholder
+      - TEMBA_HOST=rapidpro_domain_placeholder
+      - DJANGO_DEBUG=off
+      - DATABASE_URL=database_url_placeholder
+      - REDIS_URL=redis_url_placeholder
+      - SECRET_KEY=secret_key_placeholder
+      - MANAGEPY_COLLECTSTATIC=on
+      - MANAGEPY_COMPRESS=on
+      - MANAGEPY_INIT_DB=on
+      - MANAGEPY_MIGRATE=on
+      - MAILROOM_URL=mailroom_url_placeholder
+      - MAILROOM_AUTH_TOKEN=mailroom_token_placeholder
+      - ELASTICSEARCH_URL=elasitcsearch_url_placeholder
+      - SEND_AIRTIME=on
+      - SEND_EMAILS=on
+      - SEND_WEBHOOKS=on
+      - DJANGO_COMPRESSOR=on
+      - SEND_MESSAGES=on
+      - SEND_CALLS=on
+      - IP_ADDRESSES=rapidpro_ip_addresses_placeholder
+      - EMAIL_HOST=email_host_placeholder
+      - EMAIL_HOST_USER=email_username_placeholder
+      - EMAIL_HOST_PASSWORD=email_password_placeholder
+      - EMAIL_PORT=email_port_placeholder
+      - BRANDING_LINK=rapidpro_url_placeholder
+      - AWS_STORAGE_BUCKET_NAME=s3_bucket_placeholder
+      - AWS_ACCESS_KEY_ID=aws_access_key_id_placeholder
+      - AWS_SECRET_ACCESS_KEY=aws_secret_access_key_placeholder
+      - AWS_S3_REGION_NAME=s3_region_placeholder
+      - AWS_MEDIA=True
+      - IS_PROD=on
+      - CLEAR_COMPRESSOR_CACHE=on
+      - DEFAULT_FROM_EMAIL=from_email_placeholder
+    command: ["/venv/bin/celery", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,batch"]
+  beat:
+    image: praekeltfoundation/rapidpro:v5.6.5
+    depends_on:
+      - rapidpro
+      - celery
+    links:
+      - celery
+    environment:
+      - DOMAIN_NAME=rapidpro_domain_placeholder
+      - ALLOWED_HOSTS=rapidpro_domain_placeholder
+      - TEMBA_HOST=rapidpro_domain_placeholder
+      - DJANGO_DEBUG=off
+      - DATABASE_URL=database_url_placeholder
+      - REDIS_URL=redis_url_placeholder
+      - SECRET_KEY=secret_key_placeholder
+      - MANAGEPY_COLLECTSTATIC=on
+      - MANAGEPY_COMPRESS=on
+      - MANAGEPY_INIT_DB=on
+      - MANAGEPY_MIGRATE=on
+      - MAILROOM_URL=mailroom_url_placeholder
+      - MAILROOM_AUTH_TOKEN=mailroom_token_placeholder
+      - ELASTICSEARCH_URL=elasitcsearch_url_placeholder
+      - SEND_AIRTIME=on
+      - SEND_EMAILS=on
+      - SEND_WEBHOOKS=on
+      - DJANGO_COMPRESSOR=on
+      - SEND_MESSAGES=on
+      - SEND_CALLS=on
+      - IP_ADDRESSES=rapidpro_ip_addresses_placeholder
+      - EMAIL_HOST=email_host_placeholder
+      - EMAIL_HOST_USER=email_username_placeholder
+      - EMAIL_HOST_PASSWORD=email_password_placeholder
+      - EMAIL_PORT=email_port_placeholder
+      - BRANDING_LINK=rapidpro_url_placeholder
+      - AWS_STORAGE_BUCKET_NAME=s3_bucket_placeholder
+      - AWS_ACCESS_KEY_ID=aws_access_key_id_placeholder
+      - AWS_SECRET_ACCESS_KEY=aws_secret_access_key_placeholder
+      - AWS_S3_REGION_NAME=s3_region_placeholder
+      - AWS_MEDIA=True
+      - IS_PROD=on
+      - CLEAR_COMPRESSOR_CACHE=on
+      - DEFAULT_FROM_EMAIL=from_email_placeholder
+    command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery"]
+  courier:
+    image: praekeltfoundation/courier:5.6.0
+    expose:
+      - '8080'
+    environment:
+      - COURIER_DB=database_url_placeholder
+      - COURIER_REDIS=redis_host_placeholder
+      - COURIER_DOMAIN=rapidpro_domain_placeholder
+      - COURIER_SPOOL_DIR=/home/courier/spool/persisted/
+      - COURIER_AWS_SECRET_ACCESS_KEY=aws_secret_access_key_placeholder
+      - COURIER_AWS_ACCESS_KEY_ID=aws_access_key_id_placeholder
+      - COURIER_S3_MEDIA_PREFIX=attachments
+      - COURIER_S3_MEDIA_BUCKET=s3_bucket_placeholder
+      - COURIER_S3_REGION=s3_region_placeholder
+  indexer:
+    image: praekeltfoundation/rp-indexer:5.6.0
+    environment:
+      - INDEXER_DB=database_host_placeholder
+      - INDEXER_ELASTIC_URL=elasitcsearch_url_placeholder
+  mailroom:
+    image: praekeltfoundation/mailroom:5.6.1
+    environment:
+      - MAILROOM_DOMAIN=rapidpro_url_placeholder
+      - MAILROOM_AUTH_TOKEN=mailroom_token_placeholder
+      - MAILROOM_ATTACHMENT_DOMAIN=rapidpro_url_placeholder
+      - MAILROOM_DB=database_url_placeholder
+      - MAILROOM_REDIS=redis_url_placeholder
+      - MAILROOM_LOG_LEVEL=debug
+      - MAILROOM_S3_MEDIA_BUCKET=s3_bucket_placeholder
+      - MAILROOM_S3_MEDIA_PREFIX=attachments
+      - MAILROOM_AWS_ACCESS_KEY_ID=aws_access_key_id_placeholder
+      - MAILROOM_AWS_SECRET_ACCESS_KEY=aws_secret_access_key_placeholder
+      - MAILROOM_ELASTIC=elasitcsearch_url_placeholder
+    command: ["mailroom", "--address", "0.0.0.0"]
+
+volumes:
+  es_data:

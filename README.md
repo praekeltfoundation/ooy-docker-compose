@@ -52,18 +52,7 @@ Edit the file and replace any placeholders with the correct values for the envir
 * Start the rest of the containers with `docker-compose -f compose-rapidpro-565.yml -p rapidpro up -d`
 
 ### Local testing
-For RapidPro the migration file can be used to run the applications locally by setting the following environment variables:
-- DOMAIN_NAME=localhost
-- ALLOWED_HOSTS=localhost
-- TEMBA_HOST=localhost
-- DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
-- REDIS_URL=redis://redis:6379/0
-
-For Casepro the migration file can be used to run the applications locally by setting the following environment variables:
-- CASEPRO_DATABASE=postgresql://postgres:postgres@postgresql/casepro
-- REDIS_HOST=redis:6379
-- REDIS_PORT=1
-
+The migration files can be used to run the applications locally, although not all features will work (search, email, ect)
 (Note: The process for RapidPro and Casepro are the same. Just use the correct filename and replace any occurences of "rapidpro" in the instructions below with "casepro")
 * Be sure to start the postgresql container first with `docker-compose -f compose-rapidpro-migration.yml -p rapidpro up -d postgresql`
 * Once the postgresql container has spun up start the web container with `docker-compose -f compose-rapidpro-migration.yml -p rapidpro up -d rapidpro`

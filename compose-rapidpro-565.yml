@@ -31,7 +31,7 @@ services:
       - MANAGEPY_COMPRESS=on
       - MANAGEPY_INIT_DB=on
       - MANAGEPY_MIGRATE=on
-      - MAILROOM_URL=mailroom_url_placeholder
+      - MAILROOM_URL=rapidpro_url_placeholder
       - MAILROOM_AUTH_TOKEN=mailroom_token_placeholder
       - ELASTICSEARCH_URL=elasitcsearch_url_placeholder
       - SEND_AIRTIME=on
@@ -40,7 +40,6 @@ services:
       - DJANGO_COMPRESSOR=on
       - SEND_MESSAGES=on
       - SEND_CALLS=on
-      - IP_ADDRESSES=rapidpro_ip_addresses_placeholder
       - EMAIL_HOST=email_host_placeholder
       - EMAIL_HOST_USER=email_username_placeholder
       - EMAIL_HOST_PASSWORD=email_password_placeholder
@@ -75,7 +74,7 @@ services:
       - MANAGEPY_COMPRESS=on
       - MANAGEPY_INIT_DB=on
       - MANAGEPY_MIGRATE=on
-      - MAILROOM_URL=mailroom_url_placeholder
+      - MAILROOM_URL=rapidpro_url_placeholder
       - MAILROOM_AUTH_TOKEN=mailroom_token_placeholder
       - ELASTICSEARCH_URL=elasitcsearch_url_placeholder
       - SEND_AIRTIME=on
@@ -84,7 +83,6 @@ services:
       - DJANGO_COMPRESSOR=on
       - SEND_MESSAGES=on
       - SEND_CALLS=on
-      - IP_ADDRESSES=rapidpro_ip_addresses_placeholder
       - EMAIL_HOST=email_host_placeholder
       - EMAIL_HOST_USER=email_username_placeholder
       - EMAIL_HOST_PASSWORD=email_password_placeholder
@@ -118,7 +116,7 @@ services:
       - MANAGEPY_COMPRESS=on
       - MANAGEPY_INIT_DB=on
       - MANAGEPY_MIGRATE=on
-      - MAILROOM_URL=mailroom_url_placeholder
+      - MAILROOM_URL=rapidpro_url_placeholder
       - MAILROOM_AUTH_TOKEN=mailroom_token_placeholder
       - ELASTICSEARCH_URL=elasitcsearch_url_placeholder
       - SEND_AIRTIME=on
@@ -127,7 +125,6 @@ services:
       - DJANGO_COMPRESSOR=on
       - SEND_MESSAGES=on
       - SEND_CALLS=on
-      - IP_ADDRESSES=rapidpro_ip_addresses_placeholder
       - EMAIL_HOST=email_host_placeholder
       - EMAIL_HOST_USER=email_username_placeholder
       - EMAIL_HOST_PASSWORD=email_password_placeholder
@@ -169,13 +166,10 @@ services:
       - MAILROOM_ATTACHMENT_DOMAIN=rapidpro_url_placeholder
       - MAILROOM_DB=database_url_placeholder
       - MAILROOM_REDIS=redis_url_placeholder
-      - MAILROOM_LOG_LEVEL=debug
+      - MAILROOM_LOG_LEVEL=info
       - MAILROOM_S3_MEDIA_BUCKET=s3_bucket_placeholder
       - MAILROOM_S3_MEDIA_PREFIX=attachments
       - MAILROOM_AWS_ACCESS_KEY_ID=aws_access_key_id_placeholder
       - MAILROOM_AWS_SECRET_ACCESS_KEY=aws_secret_access_key_placeholder
       - MAILROOM_ELASTIC=elasitcsearch_url_placeholder
     command: ["mailroom", "--address", "0.0.0.0"]
-
-volumes:
-  es_data:

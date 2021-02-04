@@ -22,8 +22,8 @@ services:
       - ALLOWED_HOSTS=rapidpro_domain_placeholder
       - TEMBA_HOST=rapidpro_domain_placeholder
       - DJANGO_DEBUG=off
-      - DATABASE_URL=database_url_placeholder
-      - REDIS_URL=redis_url_placeholder
+      - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
+      - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=secret_key_placeholder
       - MANAGEPY_COLLECTSTATIC=on
       - MANAGEPY_COMPRESS=on
@@ -35,10 +35,6 @@ services:
       - DJANGO_COMPRESSOR=on
       - SEND_MESSAGES=on
       - SEND_CALLS=on
-      - EMAIL_HOST=email_host_placeholder
-      - EMAIL_HOST_USER=email_username_placeholder
-      - EMAIL_HOST_PASSWORD=email_password_placeholder
-      - EMAIL_PORT=email_port_placeholder
       - BRANDING_LINK=rapidpro_url_placeholder
       - CLEAR_COMPRESSOR_CACHE=on
       - DEFAULT_FROM_EMAIL=from_email_placeholder
@@ -54,8 +50,8 @@ services:
       - ALLOWED_HOSTS=rapidpro_domain_placeholder
       - TEMBA_HOST=rapidpro_domain_placeholder
       - DJANGO_DEBUG=off
-      - DATABASE_URL=database_url_placeholder
-      - REDIS_URL=redis_url_placeholder
+      - DATABASE_URL=postgresql://postgres:postgres@postgresql/rapidpro
+      - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=secret_key_placeholder
       - MANAGEPY_COLLECTSTATIC=on
       - MANAGEPY_COMPRESS=on
@@ -67,10 +63,6 @@ services:
       - DJANGO_COMPRESSOR=on
       - SEND_MESSAGES=on
       - SEND_CALLS=on
-      - EMAIL_HOST=email_host_placeholder
-      - EMAIL_HOST_USER=email_username_placeholder
-      - EMAIL_HOST_PASSWORD=email_password_placeholder
-      - EMAIL_PORT=email_port_placeholder
       - BRANDING_LINK=rapidpro_url_placeholder
       - CLEAR_COMPRESSOR_CACHE=on
       - DEFAULT_FROM_EMAIL=from_email_placeholder
@@ -81,6 +73,3 @@ services:
     image: mdillon/postgis:9.6
     environment:
       - POSTGRES_DB=rapidpro
-
-volumes:
-  es_data:

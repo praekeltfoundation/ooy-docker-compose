@@ -18,10 +18,6 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - EMAIL_PORT=email_port_placeholder
-      - EMAIL_HOST_USER=email_username_placeholder
-      - EMAIL_HOST_PASSWORD=email_password_placeholder
-      - EMAIL_HOST=email_host_placeholder
       - SITE_HOST_PATTERN=site_domain_placeholder
       - CASEPRO_DATABASE=postgresql://postgres:postgres@postgresql/casepro
       - REDIS_HOST=redis:6379
@@ -43,10 +39,6 @@ services:
       - redis
       - postgresql
     environment:
-      - EMAIL_PORT=email_port_placeholder
-      - EMAIL_HOST_USER=email_username_placeholder
-      - EMAIL_HOST_PASSWORD=email_password_placeholder
-      - EMAIL_HOST=email_host_placeholder
       - SITE_HOST_PATTERN=site_domain_placeholder
       - CASEPRO_DATABASE=postgresql://postgres:postgres@postgresql/casepro
       - REDIS_HOST=redis:6379
@@ -67,6 +59,3 @@ services:
     image: mdillon/postgis:9.6
     environment:
       - POSTGRES_DB=casepro
-
-volumes:
-  es_data:

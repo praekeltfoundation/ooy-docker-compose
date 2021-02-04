@@ -7,7 +7,7 @@ services:
     links:
       - rapidpro
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/nginx-migration.conf:/etc/nginx/nginx.conf
     ports:
       - 80:80
   rapidpro:

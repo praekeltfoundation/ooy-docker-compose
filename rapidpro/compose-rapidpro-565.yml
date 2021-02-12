@@ -5,18 +5,17 @@ services:
     depends_on:
       - rapidpro
       - courier
+      - mailroom
     links:
       - rapidpro
       - courier
+      - mailroom
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
     ports:
       - 80:80
   rapidpro:
     image: praekeltfoundation/rapidpro:v5.6.5
-    depends_on:
-      - courier
-      - mailroom
     ports:
       - 8000:8000
     environment:

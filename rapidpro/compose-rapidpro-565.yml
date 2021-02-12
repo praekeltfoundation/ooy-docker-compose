@@ -33,7 +33,7 @@ services:
       - MANAGEPY_MIGRATE=on
       - MAILROOM_URL=rapidpro_url_placeholder
       - MAILROOM_AUTH_TOKEN=mailroom_token_placeholder
-      - ELASTICSEARCH_URL=elasitcsearch_url_placeholder
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
       - SEND_AIRTIME=on
       - SEND_EMAILS=on
       - SEND_WEBHOOKS=on
@@ -76,7 +76,7 @@ services:
       - MANAGEPY_MIGRATE=on
       - MAILROOM_URL=rapidpro_url_placeholder
       - MAILROOM_AUTH_TOKEN=mailroom_token_placeholder
-      - ELASTICSEARCH_URL=elasitcsearch_url_placeholder
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
       - SEND_AIRTIME=on
       - SEND_EMAILS=on
       - SEND_WEBHOOKS=on
@@ -118,7 +118,7 @@ services:
       - MANAGEPY_MIGRATE=on
       - MAILROOM_URL=rapidpro_url_placeholder
       - MAILROOM_AUTH_TOKEN=mailroom_token_placeholder
-      - ELASTICSEARCH_URL=elasitcsearch_url_placeholder
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
       - SEND_AIRTIME=on
       - SEND_EMAILS=on
       - SEND_WEBHOOKS=on
@@ -157,7 +157,7 @@ services:
     image: praekeltfoundation/rp-indexer:5.6.0
     environment:
       - INDEXER_DB=database_host_placeholder
-      - INDEXER_ELASTIC_URL=elasitcsearch_url_placeholder
+      - INDEXER_ELASTIC_URL=http://elasticsearch:9200
   mailroom:
     image: praekeltfoundation/mailroom:5.6.1
     ports:
@@ -173,5 +173,16 @@ services:
       - MAILROOM_S3_MEDIA_PREFIX=attachments
       - MAILROOM_AWS_ACCESS_KEY_ID=aws_access_key_id_placeholder
       - MAILROOM_AWS_SECRET_ACCESS_KEY=aws_secret_access_key_placeholder
-      - MAILROOM_ELASTIC=elasitcsearch_url_placeholder
+      - MAILROOM_ELASTIC=http://elasticsearch:9200
     command: ["mailroom", "--address", "0.0.0.0"]
+  elasticsearch:
+    image: elasticsearch:6.4.0
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - 9200:9200
+    volumes:
+      - 'es_data:/usr/share/elasticsearch/data'
+
+volumes:
+  es_data:

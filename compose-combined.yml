@@ -1,0 +1,330 @@
+version: '2'
+services:
+  nginx:
+    image: nginx:latest
+    depends_on:
+      - rapidpro
+      - courier
+      - mailroom
+      - casepro
+    links:
+      - rapidpro
+      - courier
+      - mailroom
+      - casepro
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl/lvcthealth.key:/etc/ssl/lvcthealth.key
+      - ./ssl/lvcthealth.crt:/etc/ssl/lvcthealth.crt
+      - ./ssl/casepro.key:/etc/ssl/casepro.key
+      - ./ssl/casepro.crt:/etc/ssl/casepro.crt  
+      - ./ssl/options-ssl-nginx.conf:/etc/ssl/options-ssl-nginx.conf
+    ports:
+      - 80:80
+      - 443:443
+    logging:
+      options:
+        max-size: '500m'
+  rapidpro:
+    image: praekeltfoundation/rapidpro:v6.4.8
+    expose:
+      - "8000"
+    environment:
+      - DOMAIN_NAME=one2one.rapidpro.lvcthealth.org
+      - ALLOWED_HOSTS=one2one.rapidpro.lvcthealth.org
+      - TEMBA_HOST=one2one.rapidpro.lvcthealth.org
+      - DJANGO_DEBUG=off
+      - DATABASE_URL=[secret]
+      - REDIS_URL=[secret]
+      - SECRET_KEY=[secret]
+      - MANAGEPY_COLLECTSTATIC=on
+      - MANAGEPY_COMPRESS=on
+      - MANAGEPY_INIT_DB=on
+      - MANAGEPY_MIGRATE=on
+      - MAILROOM_URL=https://one2one.rapidpro.lvcthealth.org
+      - MAILROOM_AUTH_TOKEN=[secret]
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - SEND_AIRTIME=on
+      - SEND_EMAILS=on
+      - SEND_WEBHOOKS=on
+      - DJANGO_COMPRESSOR=on
+      - SEND_MESSAGES=on
+      - SEND_CALLS=on
+      - EMAIL_HOST=[secret]
+      - EMAIL_HOST_USER=[secret]
+      - EMAIL_HOST_PASSWORD=[secret]
+      - EMAIL_PORT=587
+      - BRANDING_LINK=https://one2one.rapidpro.lvcthealth.org
+      - IS_PROD=on
+      - CLEAR_COMPRESSOR_CACHE=on
+      - DEFAULT_FROM_EMAIL=youthhotline@lvcthealth.org
+      - UWSGI_HARAKIRI=300
+      - UWSGI_HTTP_TIMEOUT=300
+      - UWSGI_SOCKET_TIMEOUT=300
+      - API_THROTTLE_V2=2500000/hour
+      - API_THROTTLE_V2_CONTACTS=2500000/hour
+      - API_THROTTLE_V2_MESSAGES=2500000/hour
+      - API_THROTTLE_V2_RUNS=2500000/hour
+      - API_THROTTLE_V2_API=2500000/hour
+      - AWS_STORAGE_BUCKET_NAME=[secret]
+      - AWS_ACCESS_KEY_ID=[secret]
+      - AWS_SECRET_ACCESS_KEY=[secret]
+      - AWS_S3_REGION_NAME=us-east-2
+      - AWS_MEDIA=True
+      - SENTRY_DSN=[secret]
+      - NON_ISO6391_LANGUAGES=swh
+      - STORAGE_URL=[secret]
+    logging:
+      options:
+        max-size: '500m'
+  rapidpro-celery:
+    image: praekeltfoundation/rapidpro:v6.4.8
+    depends_on:
+      - rapidpro
+      - mailroom
+    links:
+      - mailroom
+    environment:
+      - DOMAIN_NAME=one2one.rapidpro.lvcthealth.org
+      - ALLOWED_HOSTS=one2one.rapidpro.lvcthealth.org
+      - TEMBA_HOST=one2one.rapidpro.lvcthealth.org
+      - DJANGO_DEBUG=off
+      - DATABASE_URL=[secret]
+      - REDIS_URL=[secret]
+      - SECRET_KEY=[secret]
+      - MANAGEPY_COLLECTSTATIC=off
+      - MANAGEPY_COMPRESS=off
+      - MANAGEPY_INIT_DB=off
+      - MANAGEPY_MIGRATE=off
+      - MAILROOM_URL=https://one2one.rapidpro.lvcthealth.org
+      - MAILROOM_AUTH_TOKEN=[secret]
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - SEND_AIRTIME=on
+      - SEND_EMAILS=on
+      - SEND_WEBHOOKS=on
+      - DJANGO_COMPRESSOR=on
+      - SEND_MESSAGES=on
+      - SEND_CALLS=on
+      - EMAIL_HOST=[secret]
+      - EMAIL_HOST_USER=[secret]
+      - EMAIL_HOST_PASSWORD=[secret]   
+      - EMAIL_PORT=587
+      - BRANDING_LINK=https://one2one.rapidpro.lvcthealth.org
+      - IS_PROD=on
+      - CLEAR_COMPRESSOR_CACHE=on
+      - DEFAULT_FROM_EMAIL=youthhotline@lvcthealth.org
+      - API_THROTTLE_V2=2500000/hour
+      - API_THROTTLE_V2_CONTACTS=2500000/hour
+      - API_THROTTLE_V2_MESSAGES=2500000/hour
+      - API_THROTTLE_V2_RUNS=2500000/hour
+      - API_THROTTLE_V2_API=2500000/hour
+      - AWS_STORAGE_BUCKET_NAME=[secret]
+      - AWS_ACCESS_KEY_ID=[secret]
+      - AWS_SECRET_ACCESS_KEY=[secret]
+      - AWS_S3_REGION_NAME=us-east-2
+      - AWS_MEDIA=True
+      - SENTRY_DSN=[secret]
+      - NON_ISO6391_LANGUAGES=swh               
+      - STORAGE_URL=[secret]
+    command: ["/venv/bin/celery", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery,batch"]
+    logging:
+      options:
+        max-size: '500m'
+  rapidpro-beat:
+    image: praekeltfoundation/rapidpro:v6.4.8
+    depends_on:
+      - rapidpro
+      - rapidpro-celery
+    links:
+      - rapidpro-celery
+    environment:
+      - DOMAIN_NAME=one2one.rapidpro.lvcthealth.org
+      - ALLOWED_HOSTS=one2one.rapidpro.lvcthealth.org
+      - TEMBA_HOST=one2one.rapidpro.lvcthealth.org
+      - DJANGO_DEBUG=off
+      - DATABASE_URL=[secret]
+      - REDIS_URL=[secret]
+      - SECRET_KEY=[secret]
+      - MANAGEPY_COLLECTSTATIC=off
+      - MANAGEPY_COMPRESS=off
+      - MANAGEPY_INIT_DB=off
+      - MANAGEPY_MIGRATE=off
+      - MAILROOM_URL=https://one2one.rapidpro.lvcthealth.org
+      - MAILROOM_AUTH_TOKEN=[secret]
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - SEND_AIRTIME=on
+      - SEND_EMAILS=on
+      - SEND_WEBHOOKS=on
+      - DJANGO_COMPRESSOR=on
+      - SEND_MESSAGES=on
+      - SEND_CALLS=on
+      - EMAIL_HOST=[secret]
+      - EMAIL_HOST_USER=[secret]
+      - EMAIL_HOST_PASSWORD=[secret]   
+      - EMAIL_PORT=587
+      - BRANDING_LINK=https://one2one.rapidpro.lvcthealth.org
+      - IS_PROD=on
+      - CLEAR_COMPRESSOR_CACHE=on
+      - DEFAULT_FROM_EMAIL=youthhotline@lvcthealth.org
+      - API_THROTTLE_V2=2500000/hour
+      - API_THROTTLE_V2_CONTACTS=2500000/hour
+      - API_THROTTLE_V2_MESSAGES=2500000/hour
+      - API_THROTTLE_V2_RUNS=2500000/hour
+      - API_THROTTLE_V2_API=2500000/hour
+      - AWS_STORAGE_BUCKET_NAME=[secret]
+      - AWS_ACCESS_KEY_ID=[secret]
+      - AWS_SECRET_ACCESS_KEY=[secret]
+      - AWS_S3_REGION_NAME=us-east-2
+      - AWS_MEDIA=True
+      - SENTRY_DSN=[secret]
+      - NON_ISO6391_LANGUAGES=swh               
+      - STORAGE_URL=[secret]
+    command: ["/venv/bin/celery", "--beat", "--app=temba", "worker", "--loglevel=INFO", "--queues=celery"]
+    logging:
+      options:
+        max-size: '500m'
+  courier:
+    image: praekeltfoundation/courier:6.4.0
+    expose:
+      - "8080"
+    environment:
+      - COURIER_DB=[secret]
+      - COURIER_REDIS=[secret]
+      - COURIER_DOMAIN=one2one.rapidpro.lvcthealth.org
+      - COURIER_SPOOL_DIR=/home/courier/spool/persisted/
+      - COURIER_AWS_SECRET_ACCESS_KEY=[secret]
+      - COURIER_AWS_ACCESS_KEY_ID=[secret]
+      - COURIER_S3_MEDIA_PREFIX=attachments
+      - COURIER_S3_MEDIA_BUCKET=[secret]
+      - COURIER_S3_REGION=us-east-2
+      - COURIER_LOG_LEVEL=info
+      - COURIER_SENTRY_DSN=[secret]
+    logging:
+      options:
+        max-size: '500m'
+  indexer:
+    image: praekeltfoundation/rp-indexer:6.4.0
+    depends_on:
+      - elasticsearch
+    environment:
+      - INDEXER_DB=[secret]
+      - INDEXER_ELASTIC_URL=http://elasticsearch:9200
+      - INDEXER_POLL=10
+      - INDEXER_SENTRY_DSN=[secret]
+    logging:
+      options:
+        max-size: '500m'
+  mailroom:
+    image: praekeltfoundation/mailroom:6.4.3
+    expose:
+      - "8090"
+    environment:
+      - MAILROOM_DOMAIN=https://one2one.rapidpro.lvcthealth.org
+      - MAILROOM_AUTH_TOKEN=[secret]
+      - MAILROOM_ATTACHMENT_DOMAIN=https://one2one.rapidpro.lvcthealth.org
+      - MAILROOM_DB=[secret]
+      - MAILROOM_REDIS=[secret]
+      - MAILROOM_LOG_LEVEL=info
+      - MAILROOM_ELASTIC=http://elasticsearch:9200
+      - MAILROOM_S3_MEDIA_BUCKET=[secret]
+      - MAILROOM_S3_MEDIA_PREFIX=attachments
+      - MAILROOM_AWS_ACCESS_KEY_ID=[secret]
+      - MAILROOM_AWS_SECRET_ACCESS_KEY=[secret]
+      - MAILROOM_SENTRY_DSN=[secret]
+    command: ["mailroom", "--address", "0.0.0.0"]
+    logging:
+      options:
+        max-size: '500m'
+  elasticsearch:
+    image: elasticsearch:7.10.1
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ports:
+      - 9200:9200
+    volumes:
+      - 'es_data:/usr/share/elasticsearch/data'
+    logging:
+      options:
+        max-size: '500m'
+  casepro:
+    image: praekeltfoundation/casepro-docker:v1.3.13
+    expose:
+      - "8000"
+    environment:
+      - EMAIL_HOST=[secret]
+      - EMAIL_HOST_USER=[secret]
+      - EMAIL_HOST_PASSWORD=[secret]   
+      - EMAIL_PORT=587
+      - SITE_HOST_PATTERN=https://%.casepro.lvcthealth.org
+      - CASEPRO_DATABASE=[secret]
+      - REDIS_HOST=[secret]
+      - REDIS_PORT=0  # This value is actually the redis database but the settings file looks for this
+      - SECRET_KEY=[secret]
+      - HOSTNAME=casepro.lvcthealth.org
+      - SITE_API_HOST=https://one2one.rapidpro.lvcthealth.org/
+      - C_FORCE_ROOT=true
+      - SITE_CASE_RESPONSE_REQUIRED_TIME=60
+      - SITE_CONTACT_DISPLAY=name
+      - SITE_EXTERNAL_CONTACT_URL=https://one2one.rapidpro.lvcthealth.org/contact/read/%s/
+      - SITE_BACKEND=casepro.backend.rapidpro.RapidProBackend
+      - MESSAGE_SYNC_INTERVAl=20
+      - SENTRY_DSN=[secret]
+      - DEFAULT_FROM_EMAIL=youthhotline@lvcthealth.org
+    logging:
+      options:
+        max-size: '500m'
+  casepro-celery:
+    image: praekeltfoundation/casepro-docker:v1.3.13
+    depends_on:
+      - casepro
+    environment:
+      - EMAIL_HOST=[secret]
+      - EMAIL_HOST_USER=[secret]
+      - EMAIL_HOST_PASSWORD=[secret]  
+      - EMAIL_PORT=587
+      - SITE_HOST_PATTERN=https://%s.casepro.lvcthealth.org
+      - CASEPRO_DATABASE=[secret]
+      - REDIS_HOST=[secret]
+      - REDIS_PORT=0
+      - SECRET_KEY=[secret]
+      - HOSTNAME=casepro.lvcthealth.org
+      - SITE_API_HOST=https://one2one.rapidpro.lvcthealth.org/
+      - C_FORCE_ROOT=true
+      - SITE_CASE_RESPONSE_REQUIRED_TIME=60
+      - SITE_CONTACT_DISPLAY=name
+      - SITE_EXTERNAL_CONTACT_URL=https://one2one.rapidpro.lvcthealth.org/contact/read/%s/
+      - SITE_BACKEND=casepro.backend.rapidpro.RapidProBackend
+      - MESSAGE_SYNC_INTERVAl=20
+      - SENTRY_DSN=[secret]
+      - DEFAULT_FROM_EMAIL=youthhotline@lvcthealth.org
+    command: ["celery", "--beat", "--app=casepro", "worker", "--loglevel=INFO", "--queues=celery,sync", "--concurrency=2", "--time-limit=30", "--max-tasks-per-child=100"]
+    logging:
+      options:
+        max-size: '500m'
+  bigquery-sync:
+    image: ghcr.io/praekeltfoundation/ooy-bigquery-sync:sha-e8b016e
+    environment:
+      - BQ_KEY_PATH=[secret]
+      - RAPIDPRO_TOKEN=[secret]
+    volumes:
+      - [secret]
+    logging:
+      options:
+        max-size: '500m'
+  contentrepo:
+    image: praekeltfoundation/contentrepo:v0.0.41
+    expose:
+      - "8000"
+    environment:
+      - ALLOWED_HOSTS=one2one.content.lvcthealth.org
+      - REDIS_LOCATION=[secret]
+      - SECRET_KEY=[secret]
+      - DATABASE_URL=[secret]
+      - DJANGO_SETTINGS_MODULE=contentrepo.settings.production
+      - PAGE_SIZE=20
+    logging:
+      options:
+        max-size: '500m'
+volumes:
+  es_data:
